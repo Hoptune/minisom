@@ -87,10 +87,10 @@ def asymptotic_decay(learning_rate, t, max_iter):
     return learning_rate / (1+t/(max_iter/2))
 
 def exp_grow(a0, t, max_iter):
-    return np.pow(a0, t/max_iter)
+    return power(a0, t/max_iter)
 
 def exp_decay(sig0, t, max_iter):
-    return np.pow(sig0, 1-t/max_iter)
+    return power(sig0, 1-t/max_iter)
 
 class MiniSom(object):
     Y_HEX_CONV_FACTOR = (3.0 / 2.0) / sqrt(3)
