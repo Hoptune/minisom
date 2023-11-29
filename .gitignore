@@ -42,4 +42,4 @@ nosetests.xml
 
 # Notebooks checkpoints
 examples/.ipynb_checkpoints/
-
+.ipynb_checkpoints

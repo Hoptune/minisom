@@ -86,12 +86,17 @@ def asymptotic_decay(learning_rate, t, max_iter):
     """
     return learning_rate / (1+t/(max_iter/2))
 
+def exp_grow(a0, t, max_iter):
+    return np.pow(a0, t/max_iter)
+
+def exp_decay(sig0, t, max_iter):
+    return np.pow(sig0, 1-t/max_iter)
 
 class MiniSom(object):
     Y_HEX_CONV_FACTOR = (3.0 / 2.0) / sqrt(3)
 
     def __init__(self, x, y, input_len, sigma=1.0, learning_rate=0.5,
-                 decay_function=asymptotic_decay,
+                 learning_decay_function=exp_grow, sigma_decay_function=exp_decay,
                  neighborhood_function='gaussian', topology='rectangular',
                  activation_distance='euclidean', random_seed=None):
         """Initializes a Self Organizing Maps.
@@ -124,7 +129,7 @@ class MiniSom(object):
             learning_rate(t) = learning_rate / (1 + t/T)
             where T is #num_iteration/2)
 
-        decay_function : function (default=asymptotic_decay)
+        learning/sigma_decay_function : function (default=asymptotic_decay)
             Function that reduces learning_rate and sigma at each iteration
             the default function is:
                         learning_rate / (1+t/(max_iterarations/2))
@@ -190,8 +195,9 @@ class MiniSom(object):
                 warn('triangle neighborhood function does not ' +
                      'take in account hexagonal topology')
 
-        self._decay_function = decay_function
-
+        self._learning_decay_function = learning_decay_function
+        self._sigma_decay_function = sigma_decay_function
+        
         neig_functions = {'gaussian': self._gaussian,
                           'mexican_hat': self._mexican_hat,
                           'bubble': self._bubble,
@@ -337,9 +343,9 @@ class MiniSom(object):
             If use_epochs is False:
                 Maximum number of iterations (one iteration per sample).
         """
-        eta = self._decay_function(self._learning_rate, t, max_iteration)
+        eta = self._learning_decay_function(self._learning_rate, t, max_iteration)
         # sigma and learning rate decrease with the same rule
-        sig = self._decay_function(self._sigma, t, max_iteration)
+        sig = self._sigma_decay_function(self._sigma, t, max_iteration)
         # improves the performances
         g = self.neighborhood(win, sig)*eta
         # w_new = eta * neighborhood_function * (x-w)
